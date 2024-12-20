@@ -19,7 +19,7 @@ const NoChatSelected = () => {
         {/* Welcome Text */}
         <h2 className="text-2xl font-bold">Welcome to ChatNexus!</h2>
         <p className="text-base-content/60">
-         <span> Select a conversation <br/>from the sidebar <br/>to start chatting </span>
+         <span> Select a conversation<br/>from the sidebar<br/>to start chatting</span>
         </p>
       </div>
     </div>
