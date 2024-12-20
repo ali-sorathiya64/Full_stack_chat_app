@@ -41,8 +41,8 @@ const Sidebar = () => {
             <span className="text-sm lg:text-base whitespace-nowrap hidden lg:block">
               Show online only
             </span>
-            <span className="text-xs lg:text-sm text-zinc-500">
-              ({onlineUsers.length - 1} online)
+            <span className="text-[10px] lg:text-sm text-zinc-500">
+              ({onlineUsers.length -1} online)
             </span>
           </label>
         </div>
