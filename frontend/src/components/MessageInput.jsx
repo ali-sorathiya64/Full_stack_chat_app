@@ -11,7 +11,7 @@ const MessageInput = () => {
   const [audioPreview, setAudioPreview] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Emoji picker state
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const audioInputRef = useRef(null);
@@ -79,20 +79,20 @@ const MessageInput = () => {
   };
 
   const handleEmojiSelect = (emoji) => {
-    setText((prev) => prev + emoji.native); // Append selected emoji to text
-    setShowEmojiPicker(false); // Close picker after selecting
+    setText((prev) => prev + emoji.native);
+    setShowEmojiPicker(false);
   };
 
   return (
-    <div className="p-4 w-full relative">
+    <div className="p-2 sm:p-4 w-full relative">
       {/* Previews */}
-      <div className="flex flex-col gap-3 mb-3">
+      <div className="flex flex-col gap-2 mb-2">
         {imagePreview && (
           <div className="flex items-center gap-2">
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border border-zinc-700"
             />
             <button
               onClick={() => removeFile("image/")}
@@ -107,7 +107,7 @@ const MessageInput = () => {
             <video
               src={videoPreview}
               controls
-              className="w-20 h-20 rounded-lg border border-zinc-700"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg border border-zinc-700"
             />
             <button
               onClick={() => removeFile("video/")}
@@ -136,7 +136,7 @@ const MessageInput = () => {
 
       {/* Emoji Picker */}
       {showEmojiPicker && (
-        <div className="absolute bottom-16 left-4 z-50">
+        <div className="absolute bottom-16 left-2 sm:left-4 z-50">
           <Picker onEmojiSelect={handleEmojiSelect} />
         </div>
       )}
@@ -144,12 +144,12 @@ const MessageInput = () => {
       {/* Input Form */}
       <form
         onSubmit={handleSendMessage}
-        className={`flex items-center gap-2 ${isSending ? "blur-sm" : ""}`}
+        className={`flex items-center gap-1 sm:gap-2 ${isSending ? "blur-sm" : ""}`}
       >
-        <div className="flex-1 flex gap-2">
+        <div className="flex-1 flex gap-1 sm:gap-2">
           <input
             type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+            className="w-full input input-bordered rounded-lg input-sm"
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -159,56 +159,56 @@ const MessageInput = () => {
           {/* Emoji Picker Trigger */}
           <button
             type="button"
-            className="btn btn-circle text-zinc-400"
+            className="btn btn-circle btn-sm text-zinc-400"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             disabled={isSending}
           >
-            <Smile size={20} />
+            <Smile size={18} />
           </button>
 
           {/* Dropdown Menu Trigger */}
           <button
             type="button"
-            className="btn btn-circle text-zinc-400"
+            className="btn btn-circle btn-sm text-zinc-400"
             onClick={() => setShowDropdown(!showDropdown)}
             disabled={isSending}
           >
-            <Plus size={20} />
+            <Plus size={18} />
           </button>
 
           {/* Dropdown Menu */}
           {showDropdown && (
-            <div className="absolute bottom-16 left-4 bg-white rounded-lg shadow-lg p-2 flex flex-col gap-2">
+            <div className="absolute bottom-16 left-2 sm:left-4 bg-white rounded-lg shadow-lg p-2 flex flex-col gap-1">
               <button
                 type="button"
                 className="flex items-center gap-2 p-2 hover:bg-zinc-100 rounded-lg"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Image size={20} /> Image
+                <Image size={16} /> Image
               </button>
               <button
                 type="button"
                 className="flex items-center gap-2 p-2 hover:bg-zinc-100 rounded-lg"
                 onClick={() => videoInputRef.current?.click()}
               >
-                <Video size={20} /> Video
+                <Video size={16} /> Video
               </button>
               <button
                 type="button"
                 className="flex items-center gap-2 p-2 hover:bg-zinc-100 rounded-lg"
                 onClick={() => audioInputRef.current?.click()}
               >
-                <Mic size={20} /> Audio
+                <Mic size={16} /> Audio
               </button>
             </div>
           )}
         </div>
         <button
           type="submit"
-          className={`btn btn-sm btn-circle ${isSending ? "opacity-50" : ""}`}
+          className={`btn btn-circle btn-sm ${isSending ? "opacity-50" : ""}`}
           disabled={(!text.trim() && !imagePreview && !videoPreview && !audioPreview) || isSending}
         >
-          {isSending ? <Loader className="animate-spin size-5" /> : <Send size={20} />}
+          {isSending ? <Loader className="animate-spin size-4" /> : <Send size={18} />}
         </button>
 
         {/* Hidden Inputs */}

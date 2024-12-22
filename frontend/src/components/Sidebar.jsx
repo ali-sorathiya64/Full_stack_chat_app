@@ -1,6 +1,3 @@
-
-
-
 import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
@@ -66,31 +63,35 @@ const Sidebar = () => {
         {filteredUsers.map((user) => (
           <div
             key={user._id}
-            className="w-full p-3 flex items-center justify-between gap-3 hover:bg-base-300 transition-colors"
+            className="w-full flex items-center justify-between gap-3 p-3 hover:bg-base-300 transition-colors"
           >
+            {/* User Info */}
             <button
               onClick={() => setSelectedUser(user)}
-              className={`flex items-center gap-3 ${
-                selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""
+              className={`flex items-center gap-3 flex-grow ${
+                selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300 rounded-lg" : ""
               }`}
             >
               <img
                 src={user.profilePic || "/avatar.png"}
-                alt={user.name}
-                className="size-12 object-cover rounded-full"
+                alt={`${user.fullName || "User"}'s profile`}
+                className="w-12 h-12 object-cover rounded-full border border-base-300"
               />
               <div className="hidden lg:block text-left min-w-0">
-                <div className="font-medium truncate">{user.fullName}</div>
+                <div className="font-medium truncate">{user.fullName || "Anonymous"}</div>
                 <div className="text-sm text-zinc-400">
                   {onlineUsers.includes(user._id) ? "Online" : "Offline"}
                 </div>
               </div>
             </button>
+
+            {/* Delete Button */}
             <button
               onClick={() => handleDeleteChat(user._id)}
-              className="text-red-500 hover:text-red-700"
+              className="flex-shrink-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.4 transition-colors"
+              title="Delete chat"
             >
-              <Trash2 size={18} />
+              <Trash2 size={16} />
             </button>
           </div>
         ))}
