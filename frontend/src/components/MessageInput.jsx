@@ -1,75 +1,151 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { Plus, Image, Video, Mic, Send, X, Smile, Loader } from "lucide-react";
 import toast from "react-hot-toast";
+import Picker from "@emoji-mart/react"; // Import emoji picker
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [audioPreview, setAudioPreview] = useState(null);
+  const [isSending, setIsSending] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Emoji picker state
   const fileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const audioInputRef = useRef(null);
   const { sendMessage } = useChatStore();
 
-  const handleImageChange = (e) => {
+  const handleFileChange = (e, type) => {
     const file = e.target.files[0];
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
+    if (!file) return;
+
+    if (!file.type.startsWith(type)) {
+      toast.error(`Please select a valid ${type} file.`);
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(`${type} size must be under 10MB.`);
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreview(reader.result);
+      if (type === "image/") setImagePreview(reader.result);
+      if (type === "video/") setVideoPreview(reader.result);
+      if (type === "audio/") setAudioPreview(reader.result);
     };
     reader.readAsDataURL(file);
   };
 
-  const removeImage = () => {
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const removeFile = (type) => {
+    if (type === "image/") setImagePreview(null);
+    if (type === "video/") setVideoPreview(null);
+    if (type === "audio/") setAudioPreview(null);
+
+    if (type === "image/" && fileInputRef.current) fileInputRef.current.value = "";
+    if (type === "video/" && videoInputRef.current) videoInputRef.current.value = "";
+    if (type === "audio/" && audioInputRef.current) audioInputRef.current.value = "";
   };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!text.trim() && !imagePreview) return;
+    if (!text.trim() && !imagePreview && !videoPreview && !audioPreview) return;
 
+    setIsSending(true);
     try {
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
+        video: videoPreview,
+        audio: audioPreview,
       });
 
-      // Clear form
       setText("");
       setImagePreview(null);
+      setVideoPreview(null);
+      setAudioPreview(null);
+
       if (fileInputRef.current) fileInputRef.current.value = "";
+      if (videoInputRef.current) videoInputRef.current.value = "";
+      if (audioInputRef.current) audioInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setIsSending(false);
     }
   };
 
+  const handleEmojiSelect = (emoji) => {
+    setText((prev) => prev + emoji.native); // Append selected emoji to text
+    setShowEmojiPicker(false); // Close picker after selecting
+  };
+
   return (
-    <div className="p-4 w-full">
-      {imagePreview && (
-        <div className="mb-3 flex items-center gap-2">
-          <div className="relative">
+    <div className="p-4 w-full relative">
+      {/* Previews */}
+      <div className="flex flex-col gap-3 mb-3">
+        {imagePreview && (
+          <div className="flex items-center gap-2">
             <img
               src={imagePreview}
               alt="Preview"
               className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
             />
             <button
-              onClick={removeImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
-              flex items-center justify-center"
-              type="button"
+              onClick={() => removeFile("image/")}
+              className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white"
             >
-              <X className="size-3" />
+              <X size={14} />
             </button>
           </div>
+        )}
+        {videoPreview && (
+          <div className="flex items-center gap-2">
+            <video
+              src={videoPreview}
+              controls
+              className="w-20 h-20 rounded-lg border border-zinc-700"
+            />
+            <button
+              onClick={() => removeFile("video/")}
+              className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+        {audioPreview && (
+          <div className="flex items-center gap-2">
+            <audio
+              src={audioPreview}
+              controls
+              className="w-full border border-zinc-700 rounded-lg"
+            />
+            <button
+              onClick={() => removeFile("audio/")}
+              className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Emoji Picker */}
+      {showEmojiPicker && (
+        <div className="absolute bottom-16 left-4 z-50">
+          <Picker onEmojiSelect={handleEmojiSelect} />
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+      {/* Input Form */}
+      <form
+        onSubmit={handleSendMessage}
+        className={`flex items-center gap-2 ${isSending ? "blur-sm" : ""}`}
+      >
         <div className="flex-1 flex gap-2">
           <input
             type="text"
@@ -77,33 +153,89 @@ const MessageInput = () => {
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleImageChange}
+            disabled={isSending}
           />
 
+          {/* Emoji Picker Trigger */}
           <button
             type="button"
-            className={` sm:flex btn btn-circle
-                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
-            onClick={() => fileInputRef.current?.click()}
+            className="btn btn-circle text-zinc-400"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            disabled={isSending}
           >
-            <Image size={20} />
+            <Smile size={20} />
           </button>
+
+          {/* Dropdown Menu Trigger */}
+          <button
+            type="button"
+            className="btn btn-circle text-zinc-400"
+            onClick={() => setShowDropdown(!showDropdown)}
+            disabled={isSending}
+          >
+            <Plus size={20} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {showDropdown && (
+            <div className="absolute bottom-16 left-4 bg-white rounded-lg shadow-lg p-2 flex flex-col gap-2">
+              <button
+                type="button"
+                className="flex items-center gap-2 p-2 hover:bg-zinc-100 rounded-lg"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Image size={20} /> Image
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-2 p-2 hover:bg-zinc-100 rounded-lg"
+                onClick={() => videoInputRef.current?.click()}
+              >
+                <Video size={20} /> Video
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-2 p-2 hover:bg-zinc-100 rounded-lg"
+                onClick={() => audioInputRef.current?.click()}
+              >
+                <Mic size={20} /> Audio
+              </button>
+            </div>
+          )}
         </div>
         <button
           type="submit"
-          className="btn btn-sm btn-circle"
-          disabled={!text.trim() && !imagePreview}
+          className={`btn btn-sm btn-circle ${isSending ? "opacity-50" : ""}`}
+          disabled={(!text.trim() && !imagePreview && !videoPreview && !audioPreview) || isSending}
         >
-          <Send size={22} />
+          {isSending ? <Loader className="animate-spin size-5" /> : <Send size={20} />}
         </button>
+
+        {/* Hidden Inputs */}
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={(e) => handleFileChange(e, "image/")}
+        />
+        <input
+          type="file"
+          accept="video/*"
+          className="hidden"
+          ref={videoInputRef}
+          onChange={(e) => handleFileChange(e, "video/")}
+        />
+        <input
+          type="file"
+          accept="audio/*"
+          className="hidden"
+          ref={audioInputRef}
+          onChange={(e) => handleFileChange(e, "audio/")}
+        />
       </form>
     </div>
   );
 };
+
 export default MessageInput;
