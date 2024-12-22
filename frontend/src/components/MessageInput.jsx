@@ -16,6 +16,7 @@ const MessageInput = () => {
   const videoInputRef = useRef(null);
   const audioInputRef = useRef(null);
   const { sendMessage } = useChatStore();
+  const MAX_IMAGE_SIZE_MB = 10;
 
   const handleFileChange = (e, type) => {
     const file = e.target.files[0];
@@ -25,8 +26,13 @@ const MessageInput = () => {
       toast.error(`Please select a valid ${type} file.`);
       return;
     }
-    if (file.size > 20 * 1024 * 1024) {
-      toast.error(`${type} size must be under 10MB.`);
+    // if (file.size > 20 * 1024 * 1024) {
+    //   toast.error(`${type} size must be under 10MB.`);
+    //   return;
+    // }
+    const fileSizeMB = file.size / (1024 * 1024); // Convert size to MB
+    if (fileSizeMB > MAX_IMAGE_SIZE_MB) {
+      toast.error(`Image size must be less than ${MAX_IMAGE_SIZE_MB}MB.`);
       return;
     }
 
