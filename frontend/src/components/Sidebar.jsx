@@ -75,7 +75,8 @@ const Sidebar = () => {
 <img
   src={user.profilePic || "/avatar.png"}
   alt={`${user.fullName || "User"}'s profile`}
-  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-cover rounded-full border-2 border-base-300"
+  className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full border border-base-300"
+
 />
 
 
