@@ -25,7 +25,7 @@ const MessageInput = () => {
       toast.error(`Please select a valid ${type} file.`);
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > 20 * 1024 * 1024) {
       toast.error(`${type} size must be under 10MB.`);
       return;
     }
@@ -92,13 +92,13 @@ const MessageInput = () => {
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border border-zinc-700"
+              className="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-lg border border-zinc-700" // Increased size
             />
             <button
               onClick={() => removeFile("image/")}
-              className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white"
+              className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           </div>
         )}
@@ -107,13 +107,13 @@ const MessageInput = () => {
             <video
               src={videoPreview}
               controls
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg border border-zinc-700"
+              className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg border border-zinc-700" // Increased size
             />
             <button
               onClick={() => removeFile("video/")}
-              className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white"
+              className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           </div>
         )}
@@ -126,9 +126,9 @@ const MessageInput = () => {
             />
             <button
               onClick={() => removeFile("audio/")}
-              className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white"
+              className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           </div>
         )}
