@@ -72,11 +72,13 @@ const Sidebar = () => {
                 selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300 rounded-lg" : ""
               }`}
             >
-              <img
-                src={user.profilePic || "/avatar.png"}
-                alt={`${user.fullName || "User"}'s profile`}
-                className="w-12 h-12 object-cover rounded-full border border-base-300"
-              />
+<img
+  src={user.profilePic || "/avatar.png"}
+  alt={`${user.fullName || "User"}'s profile`}
+  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-cover rounded-full border-2 border-base-300"
+/>
+
+
               <div className="hidden lg:block text-left min-w-0">
                 <div className="font-medium truncate">{user.fullName || "Anonymous"}</div>
                 <div className="text-sm text-zinc-400">
